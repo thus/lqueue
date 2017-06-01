@@ -117,11 +117,11 @@ LQueue *lqueue_create(void);
 
 void lqueue_destroy(LQueue *);
 
-int queue_is_empty(LQueue *);
+int lqueue_is_empty(LQueue *);
 
-void queue_shutdown(LQueue *);
+void lqueue_shutdown(LQueue *);
 
-void queue_free(LQueue *, void (*free_func)(void *));
+void lqueue_free(LQueue *, void (*free_func)(void *));
 
 #endif /* __LQUEUE_H__ */
 

@@ -68,7 +68,7 @@ void lqueue_destroy(LQueue *queue)
  * \retval 1 if empty.
  * \retval 0 if non-empty.
  */
-int queue_is_empty(LQueue *q)
+int lqueue_is_empty(LQueue *q)
 {
     int retval = 1;
 
@@ -90,7 +90,7 @@ int queue_is_empty(LQueue *q)
  *
  * \param q Pointer to the queue.
  */
-void queue_shutdown(LQueue *q)
+void lqueue_shutdown(LQueue *q)
 {
     for (int i = 0; i < QUEUE_NUM_SHUTDOWN_ITEMS; i++)
     {
@@ -104,7 +104,7 @@ void queue_shutdown(LQueue *q)
  * \param q Pointer to the queue.
  * \param free_func Function pointer to free item.
  */
-void queue_free(LQueue *q, void (*free_func)(void *))
+void lqueue_free(LQueue *q, void (*free_func)(void *))
 {
     if (q == NULL)
         return;
