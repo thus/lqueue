@@ -111,7 +111,7 @@ void lqueue_free(LQueue *q, void (*free_func)(void *))
 
     while (1)
     {
-        if (queue_is_empty(q))
+        if (lqueue_is_empty(q))
             break;
 
         void *item = lqueue_dequeue(q);
