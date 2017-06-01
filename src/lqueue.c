@@ -19,8 +19,11 @@
  */
 
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "lqueue.h"
+
+#define QUEUE_NUM_SHUTDOWN_ITEMS 100
 
 /**
  * \brief Create the queue.
@@ -55,5 +58,76 @@ void lqueue_destroy(LQueue *queue)
 
     if (queue != NULL)
         free(queue);
+}
+
+/**
+ * \brief Check if queue is empty.
+ *
+ * \param q Pointer to queue.
+ *
+ * \retval 1 if empty.
+ * \retval 0 if non-empty.
+ */
+int queue_is_empty(LQueue *q)
+{
+    int retval = 1;
+
+    pthread_mutex_lock(&q->mutex);
+
+    if (q->len != 0)
+        retval = 0;
+
+    pthread_mutex_unlock(&q->mutex);
+
+    return retval;
+}
+
+/**
+ * \brief Inject NULL items to shut down threads.
+ *
+ * Threads block on exit because of the pthread condition. To fix this
+ * we inject lots of "empty" items.
+ *
+ * \param q Pointer to the queue.
+ */
+void queue_shutdown(LQueue *q)
+{
+    for (int i = 0; i < QUEUE_NUM_SHUTDOWN_ITEMS; i++)
+    {
+        lqueue_enqueue(q, NULL);
+    }
+}
+
+/**
+ * \brief Free queue.
+ *
+ * \param q Pointer to the queue.
+ * \param free_func Function pointer to free item.
+ */
+void queue_free(LQueue *q, void (*free_func)(void *))
+{
+    if (q == NULL)
+        return;
+
+    while (1)
+    {
+        if (queue_is_empty(q))
+            break;
+
+        void *item = lqueue_dequeue(q);
+
+        if (item == NULL)
+            continue;
+
+        else if (free_func != NULL)
+            free_func(item);
+
+        /* Basic types like strings, integers and similar does not need
+           a free function, since we can just free them. */
+        else
+            free(item);
+    }
+
+    lqueue_destroy(q);
 }
 
