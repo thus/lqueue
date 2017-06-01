@@ -49,7 +49,7 @@ typedef struct LQueue_ {
  */
 static inline int lqueue_enqueue(LQueue *queue, void *data)
 {
-    if (queue == NULL || data == NULL)
+    if (queue == NULL)
         return -1;
 
     LQueueItem *item = malloc(sizeof(LQueueItem));
